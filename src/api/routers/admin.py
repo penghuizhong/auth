@@ -9,6 +9,7 @@ from core.database import get_engine
 from models.chat_session import ChatSession
 from models.user import User
 
+
 class AdminAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
         form = await request.form()

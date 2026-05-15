@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
+from api.deps import CurrentUser
 from core.database import get_session
 from core.security import (
     create_access_token,
@@ -12,7 +13,6 @@ from core.security import (
 from models.user import User
 from schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
 from schemas.user import UserResponse
-from api.deps import CurrentUser
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

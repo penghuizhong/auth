@@ -1,14 +1,13 @@
-from typing import Optional
+from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, Field
-from uuid import UUID
-from datetime import datetime
 
 
 class UserResponse(BaseModel):
     id: UUID
     email: str
-    nickname: Optional[str]
+    nickname: str | None
     is_active: bool
     created_at: datetime
     updated_at: datetime
@@ -17,4 +16,4 @@ class UserResponse(BaseModel):
 
 
 class UserUpdateRequest(BaseModel):
-    nickname: Optional[str] = Field(default=None, max_length=100)
+    nickname: str | None = Field(default=None, max_length=100)

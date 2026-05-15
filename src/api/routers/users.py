@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
-from core.database import get_session
 from api.deps import CurrentUser
-from schemas.user import UserUpdateRequest, UserResponse
+from core.database import get_session
+from schemas.user import UserResponse, UserUpdateRequest
 
 router = APIRouter(prefix="/users", tags=["users"])
 

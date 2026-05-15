@@ -1,18 +1,19 @@
-from typing import Annotated, Optional
+from typing import Annotated
 from uuid import UUID
+
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session, select
 
+from core.database import get_session
 from core.security import decode_token
 from models.user import User
-from core.database import get_session
 
 security = HTTPBearer(auto_error=False)
 
 
 async def get_current_user(
-    http_auth: Annotated[Optional[HTTPAuthorizationCredentials], Depends(security)],
+    http_auth: Annotated[HTTPAuthorizationCredentials | None, Depends(security)],
     session: Annotated[Session, Depends(get_session)],
 ) -> User:
     if http_auth is None:

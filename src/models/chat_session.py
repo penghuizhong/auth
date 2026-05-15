@@ -1,10 +1,10 @@
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field
-from sqlmodel import Relationship
+from sqlmodel import Field, Relationship
 
 from models.base import CoreBase, TimestampMixin
+from models.user import User
 
 
 class ChatSession(CoreBase, TimestampMixin, table=True):
@@ -13,7 +13,7 @@ class ChatSession(CoreBase, TimestampMixin, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     thread_id: UUID = Field(index=True, unique=True)
     user_id: UUID = Field(foreign_key="core_users.id", index=True)
-    title: Optional[str] = Field(default=None, max_length=255)
+    title: str | None = Field(default=None, max_length=255)
     is_deleted: bool = Field(default=False)
     
     user: Optional["User"] = Relationship()

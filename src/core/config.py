@@ -1,6 +1,7 @@
-from pydantic_settings import BaseSettings
-from pydantic import Field, SecretStr
 from functools import lru_cache
+
+from pydantic import Field, SecretStr
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -9,9 +10,6 @@ class Settings(BaseSettings):
     MODE: str = "production"
     SHOW_DOCS: bool = True
     GRACEFUL_SHUTDOWN_TIMEOUT: int = 30
-    
-    ADMIN_USERNAME: str = "admin"
-    ADMIN_PASSWORD: SecretStr = SecretStr("123456")
 
     # 数据库配置
     POSTGRES_HOST: str = "localhost"

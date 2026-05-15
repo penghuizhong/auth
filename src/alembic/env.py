@@ -1,7 +1,10 @@
 from logging.config import fileConfig
+
 from sqlalchemy import engine_from_config, pool
-from alembic import context
 from sqlmodel import SQLModel
+
+import models  # noqa: F401 — 确保所有模型注册到 SQLModel.metadata
+from alembic import context
 from core.config import settings
 
 config = context.config
@@ -21,6 +24,12 @@ def run_migrations_offline():
         context.run_migrations()
 
 
+def include_object(object, name, type_, reflected, compare_to):
+    # 只管 core_ 开头的表，忽略其他所有表
+    if type_ == "table":
+        return name.startswith("core_")
+    return True
+
 def run_migrations_online():
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
@@ -28,7 +37,7 @@ def run_migrations_online():
         poolclass=pool.NullPool,
     )
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(connection=connection, target_metadata=target_metadata, include_object=include_object,)
         with context.begin_transaction():
             context.run_migrations()
 

@@ -1,16 +1,17 @@
 # src/api/service.py
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
+from api.routers.admin import setup_admin
 from api.routers.auth import router as auth_router
 from api.routers.chat_sessions import router as chat_sessions_router
 from api.routers.users import router as users_router
-from api.routers.admin import setup_admin
-
 from core.config import settings
 from core.database import create_db_and_tables
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

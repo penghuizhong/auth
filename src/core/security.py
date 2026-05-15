@@ -1,13 +1,8 @@
-from datetime import datetime, timedelta, timezone
-from uuid import UUID, uuid4
+from datetime import UTC, datetime, timedelta
 from typing import Any
+from uuid import UUID, uuid4
 
 import bcrypt
-
-from datetime import datetime, timedelta, timezone
-from uuid import UUID, uuid4
-from typing import Any
-
 import jwt
 
 from core.config import settings
@@ -27,12 +22,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(subject: UUID, email: str) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     payload: dict[str, Any] = {
         "sub": str(subject),
         "email": email,
         "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "iat": datetime.now(UTC),
         "type": "access",
         "jti": str(uuid4()),
     }
@@ -40,11 +35,11 @@ def create_access_token(subject: UUID, email: str) -> str:
 
 
 def create_refresh_token(subject: UUID) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    expire = datetime.now(UTC) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     payload: dict[str, Any] = {
         "sub": str(subject),
         "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "iat": datetime.now(UTC),
         "type": "refresh",
         "jti": str(uuid4()),
     }
