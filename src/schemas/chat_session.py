@@ -25,4 +25,4 @@ class ChatSessionResponse(BaseModel):
 
 
 class ChatSessionUpdateRequest(BaseModel):
-    title: str = Field(min_length=1, max_length=255)
+    title: str | None = Field(default=None, max_length=255)

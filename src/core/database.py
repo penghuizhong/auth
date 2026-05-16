@@ -19,7 +19,6 @@ def get_engine():
 
 
 def create_db_and_tables():
-    """开发环境自动建表（生产使用 Alembic）"""
     SQLModel.metadata.create_all(get_engine())
 
 

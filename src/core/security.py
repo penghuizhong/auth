@@ -7,6 +7,8 @@ import jwt
 
 from core.config import settings
 
+_blacklisted_jtis: set[str] = set()
+
 
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
@@ -52,3 +54,15 @@ def decode_token(token: str) -> dict[str, Any]:
         settings.AUTH_SECRET.get_secret_value(),
         algorithms=["HS256"],
     )
+
+
+def blacklist_token(jti: str) -> None:
+    _blacklisted_jtis.add(jti)
+
+
+def is_token_blacklisted(jti: str) -> bool:
+    return jti in _blacklisted_jtis
+
+
+def cleanup_blacklist() -> None:
+    _blacklisted_jtis.clear()

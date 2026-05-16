@@ -1,4 +1,5 @@
 # src/api/routers/admin.py
+import time
 from fastapi import FastAPI
 from sqladmin import Admin, ModelView
 from sqladmin.authentication import AuthenticationBackend
@@ -14,9 +15,10 @@ class AdminAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
         form = await request.form()
         username, password = form.get("username"), form.get("password")
-        
+
         if username == settings.ADMIN_USERNAME and password == settings.ADMIN_PASSWORD.get_secret_value():
-            request.session.update({"token": "admin_token"})
+            token = f"{int(time.time())}:{settings.ADMIN_USERNAME}"
+            request.session.update({"token": token})
             return True
         return False
 
@@ -28,26 +30,26 @@ class AdminAuth(AuthenticationBackend):
         token = request.session.get("token")
         if not token:
             return False
-        return True
+        try:
+            timestamp, _ = token.split(":", 1)
+            elapsed = time.time() - int(timestamp)
+            return elapsed < 86400
+        except (ValueError, TypeError):
+            return False
+
 
 class UserAdmin(ModelView, model=User):
-    # 此处为您保留了上一回合建议的汉化配置位置，您可以随时开启
-    # name = "用户"
-    # name_plural = "用户管理"
     column_list = ["id", "email", "nickname", "is_active", "created_at"]
     column_searchable_list = ["email", "nickname"]
     column_sortable_list = ["created_at"]
 
+
 class ChatSessionAdmin(ModelView, model=ChatSession):
-    # name = "会话"
-    # name_plural = "会话管理"
-    column_list = [ "title", "is_deleted", "created_at"]
+    column_list = ["title", "is_deleted", "created_at"]
     column_searchable_list = ["title"]
     column_sortable_list = ["created_at"]
-    
 
 
-# 👇 核心黑魔法：接收主 app 实例，在此处完成挂载
 def setup_admin(app: FastAPI):
     admin = Admin(
         app=app,

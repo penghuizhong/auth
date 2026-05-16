@@ -6,7 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session, select
 
 from core.database import get_session
-from core.security import decode_token
+from core.security import decode_token, is_token_blacklisted
 from models.user import User
 
 security = HTTPBearer(auto_error=False)
@@ -31,10 +31,14 @@ async def get_current_user(
         payload = decode_token(http_auth.credentials)
         if payload.get("type") != "access":
             raise credentials_exception
+        if is_token_blacklisted(payload.get("jti")):
+            raise credentials_exception
         user_id = payload.get("sub")
         if user_id is None:
             raise credentials_exception
         user_id = UUID(user_id)
+    except HTTPException:
+        raise
     except Exception:
         raise credentials_exception
 

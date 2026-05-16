@@ -15,16 +15,11 @@ class RequestIdFilter(logging.Filter):
 
 
 def setup_structured_logging(level: str = "INFO") -> None:
-    """
-    配置结构化日志。
-
-    开发环境 (MODE=dev): 人类可读格式
-    生产环境 (MODE=prod): JSON 格式，便于 ELK/Loki 解析
-    """
     is_dev = settings.MODE.lower() in ("dev", "development")
 
-    # 清除默认 handler
     root = logging.getLogger()
+    if root.handlers:
+        return
     root.handlers.clear()
     root.setLevel(getattr(logging, level.upper(), logging.INFO))
 
@@ -32,13 +27,11 @@ def setup_structured_logging(level: str = "INFO") -> None:
     handler.addFilter(RequestIdFilter())
 
     if is_dev:
-        # 开发环境：人类可读格式
         formatter = logging.Formatter(
             fmt="%(asctime)s | %(levelname)-8s | %(name)s | [%(request_id)s] | %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
     else:
-        # 生产环境：JSON 格式
         try:
             from pythonjsonlogger import jsonlogger
             formatter = jsonlogger.JsonFormatter(
@@ -51,7 +44,6 @@ def setup_structured_logging(level: str = "INFO") -> None:
                 },
             )
         except ImportError:
-            # 降级到普通格式
             formatter = logging.Formatter(
                 fmt="%(asctime)s | %(levelname)-8s | %(name)s | [%(request_id)s] | %(message)s",
                 datefmt="%Y-%m-%dT%H:%M:%S",
@@ -60,7 +52,6 @@ def setup_structured_logging(level: str = "INFO") -> None:
     handler.setFormatter(formatter)
     root.addHandler(handler)
 
-    # 抑制第三方库的过度日志
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
     logging.getLogger("litellm").setLevel(logging.WARNING)
