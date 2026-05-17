@@ -23,11 +23,13 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     )
 
 
-def create_access_token(subject: UUID, email: str) -> str:
+# 💡 修改点 1：参数 email 改成了 username
+def create_access_token(subject: UUID, username: str) -> str:
     expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     payload: dict[str, Any] = {
         "sub": str(subject),
-        "email": email,
+        # 💡 修改点 2：Token 负载里的键值对也改成了 username
+        "username": username, 
         "exp": expire,
         "iat": datetime.now(UTC),
         "type": "access",

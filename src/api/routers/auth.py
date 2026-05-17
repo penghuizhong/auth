@@ -25,13 +25,15 @@ bearer_scheme = HTTPBearer()
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(request: RegisterRequest, session: Session = Depends(get_session)):
-    statement = select(User).where(User.email == request.email)
+    # 改用 username 查重
+    statement = select(User).where(User.username == request.username)
     existing = session.exec(statement).first()
     if existing:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="该邮箱已注册")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="该用户名已注册")
 
+    # 创建用户时使用 username
     user = User(
-        email=request.email,
+        username=request.username,
         hashed_password=hash_password(request.password),
         nickname=request.nickname,
     )
@@ -39,22 +41,24 @@ def register(request: RegisterRequest, session: Session = Depends(get_session)):
     session.commit()
     session.refresh(user)
 
-    access_token = create_access_token(user.id, user.email)
+    # 签发 token 时把 username 塞进去
+    access_token = create_access_token(user.id, user.username)
     refresh_token = create_refresh_token(user.id)
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
 
 @router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest, session: Session = Depends(get_session)):
-    statement = select(User).where(User.email == request.email)
+    # 改用 username 登录
+    statement = select(User).where(User.username == request.username)
     user = session.exec(statement).first()
     if not user or not verify_password(request.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="邮箱或密码错误")
+        raise HTTPException(status_code=401, detail="用户名或密码错误")
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="账户已禁用")
 
-    access_token = create_access_token(user.id, user.email)
+    access_token = create_access_token(user.id, user.username)
     refresh_token = create_refresh_token(user.id)
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -78,7 +82,8 @@ def refresh(request: RefreshRequest, session: Session = Depends(get_session)):
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="用户不存在或已禁用")
 
-    access_token = create_access_token(user.id, user.email)
+    # 刷新 token 也保持一致使用 username
+    access_token = create_access_token(user.id, user.username)
     new_refresh_token = create_refresh_token(user.id)
     return TokenResponse(access_token=access_token, refresh_token=new_refresh_token)
 
@@ -103,4 +108,5 @@ def logout(
 
 @router.get("/verify")
 def verify(current_user: CurrentUser):
-    return {"valid": True, "user_id": str(current_user.id), "email": current_user.email}
+    # 验证接口返回 username 而不是 email
+    return {"valid": True, "user_id": str(current_user.id), "username": current_user.username}

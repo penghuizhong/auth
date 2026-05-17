@@ -9,7 +9,7 @@ class User(CoreBase, TimestampMixin, table=True):
     def __str__(self):
         return f"{self.nickname or '未命名'} ({self.email})"
 
-    email: str = Field(max_length=255, unique=True, index=True)
+    username: str = Field(max_length=255, unique=True, index=True)
     hashed_password: str = Field(max_length=255)
     nickname: str | None = Field(default=None, max_length=100)
     is_active: bool = Field(default=True)

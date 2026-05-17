@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field
 
 class UserResponse(BaseModel):
     id: UUID
-    email: str
     nickname: str | None
     is_active: bool
     created_at: datetime

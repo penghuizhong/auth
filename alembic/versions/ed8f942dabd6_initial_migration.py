@@ -1,20 +1,19 @@
-"""initial migration: create core_users and core_chat_sessions
+"""initial_migration
 
-Revision ID: 3afb7dc0c8f0
+Revision ID: ed8f942dabd6
 Revises: 
-Create Date: 2026-05-15 15:00:06.535005
+Create Date: 2026-05-17 21:03:18.097178
 """
-from collections.abc import Sequence
-
+from typing import Sequence, Union
+from alembic import op
 import sqlalchemy as sa
 import sqlmodel
 
-from alembic import op
 
-revision: str = '3afb7dc0c8f0'
-down_revision: str | None = None
-branch_labels: str | Sequence[str] | None = None
-depends_on: str | Sequence[str] | None = None
+revision: str = 'ed8f942dabd6'
+down_revision: Union[str, None] = None
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
@@ -23,13 +22,13 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('id', sa.Uuid(), nullable=False),
-    sa.Column('email', sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
+    sa.Column('username', sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
     sa.Column('hashed_password', sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
     sa.Column('nickname', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_core_users_email'), 'core_users', ['email'], unique=True)
+    op.create_index(op.f('ix_core_users_username'), 'core_users', ['username'], unique=True)
     op.create_table('core_chat_sessions',
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
@@ -51,6 +50,6 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_core_chat_sessions_user_id'), table_name='core_chat_sessions')
     op.drop_index(op.f('ix_core_chat_sessions_thread_id'), table_name='core_chat_sessions')
     op.drop_table('core_chat_sessions')
-    op.drop_index(op.f('ix_core_users_email'), table_name='core_users')
+    op.drop_index(op.f('ix_core_users_username'), table_name='core_users')
     op.drop_table('core_users')
     # ### end Alembic commands ###
