@@ -1,4 +1,8 @@
+import sys
 from logging.config import fileConfig
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
@@ -25,7 +29,6 @@ def run_migrations_offline():
 
 
 def include_object(object, name, type_, reflected, compare_to):
-    # 只管 core_ 开头的表，忽略其他所有表
     if type_ == "table":
         return name.startswith("core_")
     return True
