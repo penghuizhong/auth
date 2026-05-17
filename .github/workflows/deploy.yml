@@ -30,9 +30,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/fyzj-core:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/fyzj-core:v1.${{ github.run_number }}
-          # 💡 如果您的前端打包需要 API 地址，可以在这里传入参数
-          # build-args: |
-          #   NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
 
 
 # ==========================================

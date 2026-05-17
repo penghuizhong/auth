@@ -2,7 +2,7 @@ import sys
 from logging.config import fileConfig
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
