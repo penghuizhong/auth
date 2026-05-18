@@ -1,8 +1,13 @@
+import os
 import sys
 from logging.config import fileConfig
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+
+# 加载环境变量（必须在导入 models 之前）
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
@@ -30,7 +35,9 @@ def run_migrations_offline():
 
 def include_object(object, name, type_, reflected, compare_to):
     if type_ == "table":
-        return name.startswith("core_")
+        # 只处理 core 服务的表（带配置前缀的）
+        prefix = os.environ.get("CORE_TABLE_PREFIX", "core_")
+        return name.startswith(prefix)
     return True
 
 def run_migrations_online():

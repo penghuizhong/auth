@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str = "admin"
     ADMIN_PASSWORD: SecretStr = SecretStr("admin")
 
+    # 表名前缀配置（默认 core_）
+    CORE_TABLE_PREFIX: str = "core_"
+    CHAT_SESSION_TABLE_NAME: str = "chat_sessions"
+
+
     @property
     def database_url(self) -> str:
         return (

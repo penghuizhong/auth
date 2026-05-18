@@ -1,8 +1,8 @@
-"""initial_migration
+"""用户表初始化
 
-Revision ID: ed8f942dabd6
+Revision ID: 55ede0d9a9db
 Revises: 
-Create Date: 2026-05-17 21:03:18.097178
+Create Date: 2026-05-18 19:33:42.909976
 """
 from typing import Sequence, Union
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 import sqlmodel
 
 
-revision: str = 'ed8f942dabd6'
+revision: str = '55ede0d9a9db'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

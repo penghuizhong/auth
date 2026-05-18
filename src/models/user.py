@@ -4,7 +4,7 @@ from models.base import CoreBase, TimestampMixin
 
 
 class User(CoreBase, TimestampMixin, table=True):
-    __tablename__ = "core_users"
+    __tablename__ = "users"
 
     def __str__(self):
         return f"{self.nickname or '未命名'} ({self.email})"
